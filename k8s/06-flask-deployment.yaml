@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  namespace: flask-mongodb
+  labels:
+    app: flask-app
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask
+        image: flask-mongodb-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+          name: flask
+          protocol: TCP
+        env:
+        - name: MONGODB_URI
+          value: "mongodb://flaskuser:flaskpass123@mongodb-service.flask-mongodb.svc.cluster.local:27017/flask_db?authSource=admin"
+        - name: MONGO_INITDB_DATABASE
+          value: "flask_db"
+        - name: MONGO_COLLECTION_NAME
+          value: "data"
+        - name: FLASK_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "250Mi"
+            cpu: "200m"
+          limits:
+            memory: "500Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        securityContext:
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+  namespace: flask-mongodb
+  labels:
+    app: flask-app
+spec:
+  type: NodePort
+  selector:
+    app: flask-app
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30000
+    protocol: TCP
+    name: flask

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Flask Application
+  web:
+    build:
+      context: .
+    ports:
+      - "5000:5000"
+    environment:
+      # Flask Configuration
+      FLASK_APP: app.py
+      FLASK_ENV: development
+      FLASK_DEBUG: '1'
+      
+      # MongoDB Atlas Configuration
+      MONGODB_URI: ${MONGODB_URI:-mongodb://localhost:27017/}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-flask_db}
+      
+      # Python
+      PYTHONUNBUFFERED: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    
+    # Development volumes
+    volumes:
+      - .:/app
+      - /app/__pycache__
+      - /app/.pytest_cache
+    
+    # Health check for the Flask app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    restart: unless-stopped
+    command: python app.py
+
+# Note: Make sure to set the MONGODB_URI environment variable in a .env file
