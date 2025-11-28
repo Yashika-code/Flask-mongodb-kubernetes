@@ -69,7 +69,7 @@ Start-Sleep -Seconds 15
 Log "Checking metrics-server deployment:"
 kubectl get deployment -n kube-system metrics-server 2>&1 | Tee-Object -FilePath $logFile -Append
 
-section "STEP 3: Build and Load Docker Image"
+Section "STEP 3: Build and Load Docker Image"
 Log "Building Flask MongoDB Docker image..."
 Set-Location 'c:\Users\HP\Learning_React\farAlpha\FLASK-MONGODB-K8S-SUBMISSION'
 docker build -t flask-mongodb-app:latest . 2>&1 | Tee-Object -FilePath $logFile -Append
@@ -77,7 +77,7 @@ docker build -t flask-mongodb-app:latest . 2>&1 | Tee-Object -FilePath $logFile 
 Log "Loading image into Minikube..."
 minikube image load flask-mongodb-app:latest 2>&1 | Tee-Object -FilePath $logFile -Append
 
-section "STEP 4: Deploy All Kubernetes Resources"
+Section "STEP 4: Deploy All Kubernetes Resources"
 Log "Applying Kubernetes manifests in order..."
 
 $manifests = @(
@@ -103,7 +103,7 @@ kubectl apply -f k8s/07-hpa.yaml 2>&1 | Tee-Object -FilePath $logFile -Append
 Log "Waiting 30 seconds for pods to initialize..."
 Start-Sleep -Seconds 30
 
-section "STEP 5: BASELINE STATUS (BEFORE LOAD)"
+Section "STEP 5: BASELINE STATUS (BEFORE LOAD)"
 Log "Current pod replicas (should be 1-2):"
 kubectl get pods -n flask-mongodb -o wide 2>&1 | Tee-Object -FilePath $logFile -Append
 
@@ -119,7 +119,7 @@ Log ""
 Log "Pod CPU/Memory metrics (baseline):"
 kubectl top pods -n flask-mongodb 2>&1 | Tee-Object -FilePath $logFile -Append
 
-section "STEP 6: GENERATE HIGH CPU LOAD"
+Section "STEP 6: GENERATE HIGH CPU LOAD"
 Log "Creating load generator pod with 30 concurrent requests..."
 Log "This simulates high traffic to trigger CPU-based autoscaling..."
 
@@ -139,7 +139,7 @@ for ($i = 0; $i -lt 45; $i += 5) {
     Start-Sleep -Seconds 5
 }
 
-section "STEP 7: FINAL AUTOSCALING RESULTS (AFTER LOAD)"
+Section "STEP 7: FINAL AUTOSCALING RESULTS (AFTER LOAD)"
 Log "Load generation complete. Checking final scaling state..."
 Log ""
 Log "Final Pod Count:"
@@ -161,7 +161,7 @@ Log ""
 Log "Deployment Replica Status:"
 kubectl get deployment -n flask-mongodb flask-app -o wide 2>&1 | Tee-Object -FilePath $logFile -Append
 
-section "VERIFICATION CHECKLIST"
+Section "VERIFICATION CHECKLIST"
 Log "[CHECK 1] Pod Replicas Increased?"
 $podCount = (kubectl get pods -n flask-mongodb --no-headers 2>$null | wc -l)
 Log "  Current pod count: $podCount (should be 2-5, started at 1)"
@@ -178,7 +178,7 @@ Log "[CHECK 4] Scaling Events in HPA?"
 Log "  See 'HPA Full Details' section above for Events showing:"
 Log "    - SuccessfulRescaleEvent or ScaledUp"
 
-section "SUMMARY & NEXT STEPS"
+Section "SUMMARY & NEXT STEPS"
 Log "Test completed at $(Get-Date)"
 Log ""
 Log "Results saved to: $logFile"
@@ -190,10 +190,10 @@ Log "3. Show HPA details with scaling events"
 Log "4. Show CPU metrics from 'FINAL RESULTS' section"
 Log ""
 Log "HR Requirements Met:"
-Log "  ✓ Minimum 2 replicas (Flask deployment spec)"
-Log "  ✓ Maximum 5 replicas (HPA maxReplicas)"
-Log '  ✓ Scales based on CPU usage (70% for production, 30% for testing)'
-Log "  ✓ Auto-scaling demonstrated with load test"
+Log "  - Minimum 2 replicas (Flask deployment spec)"
+Log "  - Maximum 5 replicas (HPA maxReplicas)"
+Log '  - Scales based on CPU usage (70% for production, 30% for testing)'
+Log "  - Auto-scaling demonstrated with load test"
 Log ""
 
 Log "Clean up (optional):"
