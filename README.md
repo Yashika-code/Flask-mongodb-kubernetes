@@ -144,6 +144,56 @@ kubectl describe hpa -n flask-mongodb flask-app
 # View resource usage
 kubectl top pods -n flask-mongodb
 kubectl top nodes
+
+## Autoscaling (Horizontal Pod Autoscaler)
+
+- **Ensure metrics are available:** HPA uses metrics (CPU) from the Kubernetes metrics API. On Minikube enable the addon:
+
+```powershell
+minikube addons enable metrics-server
+```
+
+Or install the metrics-server for other clusters:
+
+```powershell
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
+- **Apply the HPA manifest:** (this repository contains `k8s/07-hpa.yaml` with behavior settings)
+
+```powershell
+kubectl apply -f k8s/07-hpa.yaml
+# or: kubectl apply -f k8s/hpa.yaml
+kubectl get hpa -n flask-mongodb
+kubectl describe hpa -n flask-mongodb
+```
+
+- **Confirm pod resource requests are present:** HPA needs `resources.requests.cpu` in the pod spec (the deployment in `k8s/06-flask-deployment.yaml` already sets `requests: cpu: "200m"`).
+
+- **Generate load to observe scaling:** create a simple load pod that repeatedly hits the service (runs inside the cluster):
+
+```powershell
+kubectl run -n flask-mongodb load-generator --image=busybox --restart=Never -- /bin/sh -c "while true; do wget -q -O- http://flask-service:5000/; sleep 0.5; done"
+```
+
+Then watch the HPA and pods:
+
+```powershell
+kubectl get hpa -n flask-mongodb -w
+kubectl get pods -n flask-mongodb
+kubectl top pods -n flask-mongodb
+```
+
+- **Notes:**
+   - HPA only scales when observed metrics exceed the target (e.g., 70% CPU). If load isn't high enough, increase load or lower target temporarily for testing.
+   - There are two HPA manifests in `k8s/` — use `07-hpa.yaml` (it includes namespace and behavior rules). Remove duplicates if desired.
+   - After verifying autoscaling locally, commit and push changes to GitHub:
+
+```powershell
+git add k8s/07-hpa.yaml k8s/06-flask-deployment.yaml README.md
+git commit -m "Add HPA instructions and autoscaling notes to README"
+git push origin main
+```
 ```
 
 ## 📊 Architecture
