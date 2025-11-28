@@ -1,8 +1,6 @@
-# QUICK START: How to Show Autoscaling to Your HR Manager
+# 🎯 Quick Demo for HR - HPA Autoscaling
 
 ## ⏱️ Time Required: 10 minutes
-
----
 
 ## 🚀 FASTEST WAY (Recommended)
 
@@ -31,7 +29,7 @@ minikube start --driver=hyperv --memory=4096 --cpus=2
 
 ---
 
-## 📊 What HR Will See
+## 📊 What You'll See
 
 ✅ **Pod count increases from 2 → 3 → 4 pods**
 ✅ **HPA marks "ScaledUp" events**  
@@ -40,9 +38,7 @@ minikube start --driver=hyperv --memory=4096 --cpus=2
 
 ---
 
-## 📸 Key Screenshots to Show
-
-After test completes, show HR these outputs:
+## 📸 Key Screenshots to Show HR
 
 ### Screenshot 1: Initial State
 ```powershell
@@ -85,7 +81,7 @@ Shows: `CPU 200-250m per pod` (high load)
 
 ---
 
-## 🔍 If Test Doesn't Work
+## 🔍 Troubleshooting
 
 ### Problem: Minikube won't start
 ```powershell
@@ -153,47 +149,14 @@ kubectl describe hpa -n flask-mongodb flask-hpa
 
 ---
 
-## 📁 Files to Reference
+## 📁 Key Files
 
 | File | Purpose |
 |------|---------|
 | `hpa-complete-test.ps1` | Automated test script |
-| `AUTOSCALING-TESTING.md` | Test scenarios & cookie point |
-| `HOW-TO-VERIFY-AND-DEMO.md` | Full verification guide |
 | `k8s/07-hpa.yaml` | HPA configuration (min 2, max 5, 70% CPU) |
 | `k8s/06-flask-deployment.yaml` | Flask deployment with resource limits |
 | `README.md` | Overall setup guide |
-
----
-
-## 🎬 Live Demo Script (Show HR This)
-
-```powershell
-# Show initial state
-Write-Host "BEFORE AUTOSCALING:" -ForegroundColor Green
-kubectl get pods -n flask-mongodb
-kubectl get hpa -n flask-mongodb -o wide
-
-# Generate load
-Write-Host "`nSTARTING LOAD..." -ForegroundColor Yellow
-kubectl run -n flask-mongodb demo-load --image=busybox --restart=Never -- sh -c 'for i in {1..30}; do wget -q -O- http://flask-service:5000/ 2>/dev/null & done; wait'
-
-# Wait for scaling
-Start-Sleep -Seconds 20
-
-# Show scaling happened
-Write-Host "`nAFTER AUTOSCALING:" -ForegroundColor Cyan
-kubectl get pods -n flask-mongodb
-Write-Host "`nPod count increased!`n" -ForegroundColor Green
-
-# Show metrics
-Write-Host "CPU METRICS:" -ForegroundColor Magenta
-kubectl top pods -n flask-mongodb
-
-# Show proof
-Write-Host "`nSCALING EVENTS:" -ForegroundColor Yellow
-kubectl describe hpa -n flask-mongodb flask-hpa | grep -A 5 "Events:"
-```
 
 ---
 

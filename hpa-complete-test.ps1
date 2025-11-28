@@ -192,7 +192,7 @@ Log ""
 Log "HR Requirements Met:"
 Log "  ✓ Minimum 2 replicas (Flask deployment spec)"
 Log "  ✓ Maximum 5 replicas (HPA maxReplicas)"
-Log "  ✓ Scales based on CPU usage (70% for production, 30% for testing)"
+Log '  ✓ Scales based on CPU usage (70% for production, 30% for testing)'
 Log "  ✓ Auto-scaling demonstrated with load test"
 Log ""
 
