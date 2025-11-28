@@ -10,7 +10,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: flask-app
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 5
   metrics:
   - type: Resource
@@ -18,10 +18,11 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        # Lowered for easier local testing; raise back to 60-70 for production
+        averageUtilization: 30
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 60
       policies:
       - type: Percent
         value: 50
@@ -31,8 +32,8 @@ spec:
       policies:
       - type: Percent
         value: 100
-        periodSeconds: 30
+        periodSeconds: 15
       - type: Pods
-        value: 1
-        periodSeconds: 30
+        value: 2
+        periodSeconds: 15
       selectPolicy: Max
