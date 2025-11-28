@@ -1,4 +1,4 @@
-# 🎯 Quick Demo for HR - HPA Autoscaling
+# 🎯 - HPA Autoscaling
 
 ## ⏱️ Time Required: 10 minutes
 
@@ -29,7 +29,7 @@ minikube start --driver=hyperv --memory=4096 --cpus=2
 
 ---
 
-## 📊 What You'll See
+## 
 
 ✅ **Pod count increases from 2 → 3 → 4 pods**
 ✅ **HPA marks "ScaledUp" events**  
@@ -38,48 +38,6 @@ minikube start --driver=hyperv --memory=4096 --cpus=2
 
 ---
 
-## 📸 Key Screenshots to Show HR
-
-### Screenshot 1: Initial State
-```powershell
-kubectl get hpa -n flask-mongodb -o wide
-```
-Shows: `REPLICAS=2` (starting point)
-
-### Screenshot 2: After Load
-```powershell
-kubectl get pods -n flask-mongodb
-```
-Shows: `4-5 pods` (increased from 2)
-
-### Screenshot 3: Proof of Scaling
-```powershell
-kubectl describe hpa -n flask-mongodb flask-hpa | grep -A 10 "Events:"
-```
-Shows: `SuccessfulRescaleEvent: Scaled from 2 to 4`
-
-### Screenshot 4: CPU Metrics
-```powershell
-kubectl top pods -n flask-mongodb
-```
-Shows: `CPU 200-250m per pod` (high load)
-
----
-
-## 🎯 What to Say to HR
-
-*"Our Kubernetes deployment automatically scales:*
-
-*- **Started with:** 2 Flask pods*
-*- **Scaled to:** 4 pods when CPU exceeded 70%*
-*- **Maximum:** Can scale to 5 pods*
-*- **Automatic:** No manual intervention needed*
-*- **Database:** MongoDB stays stable during scaling*
-*- **Results:** All visible in the HPA events*
-
-*This meets all your requirements: min 2, max 5, scales at 70% CPU."*
-
----
 
 ## 🔍 Troubleshooting
 
@@ -133,21 +91,6 @@ kubectl get pods -n flask-mongodb -w
 # 7. Check final events
 kubectl describe hpa -n flask-mongodb flask-hpa
 ```
-
----
-
-## ✅ Final Checklist
-
-- [ ] Minikube running
-- [ ] All pods in "Running" status
-- [ ] Flask app responds to requests
-- [ ] MongoDB has data
-- [ ] HPA shows "READY = True"
-- [ ] Test script ready to run
-- [ ] GitHub has all changes pushed
-- [ ] Ready to show HR! 🎉
-
----
 
 ## 📁 Key Files
 
