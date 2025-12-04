@@ -1,0 +1,17 @@
+# PersistentVolume (optional example) and a StorageClass-less PVC template is provided via StatefulSet's volumeClaimTemplates.
+# For minikube using hostPath:
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv
+  namespace: flask-mongo
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/mongo
+  persistentVolumeReclaimPolicy: Retain
+---
+# Optionally create a matching PVC referenced by StatefulSet, but we'll use volumeClaimTemplates inside StatefulSet directly.
